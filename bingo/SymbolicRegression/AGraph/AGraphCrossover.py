@@ -41,19 +41,10 @@ class AGraphCrossover(Crossover):
         child_1 = parent_1.copy()
         child_2 = parent_2.copy()
 
-        num_p_1_consts = len(parent_1.constants)
-        child_1.constants = parent_1.constants + parent_2.constants
-        child_2.constants = parent_1.constants + parent_2.constants
-        const_filt = np.logical_and(child_2.command_array[:, 0] == 1,
-                                    child_2.command_array[:, 1] != -1)
-        child_2.command_array[const_filt, 1] += num_p_1_consts
+        self._modify_children_for_tracking_constants(child_1, child_2,
+                                                     parent_1, parent_2)
 
-        ag_size = parent_1.command_array.shape[0]
-        cross_point = np.random.randint(1, ag_size-1)
-        child_1.command_array[cross_point:] = \
-            child_2.command_array[cross_point:]
-        child_2.command_array[cross_point:] = \
-            parent_1.command_array[cross_point:]
+        self._crossover_command_arrays(child_1, child_2, parent_1)
 
         # TODO can we shift this responsibility to agraph?
         child_1.notify_command_array_modification(
@@ -66,3 +57,22 @@ class AGraphCrossover(Crossover):
         child_2.genetic_age = child_age
 
         return child_1, child_2
+
+    @staticmethod
+    def _modify_children_for_tracking_constants(child_1, child_2,
+                                                parent_1, parent_2):
+        num_p_1_consts = len(parent_1.constants)
+        child_1.constants = parent_1.constants + parent_2.constants
+        child_2.constants = parent_1.constants + parent_2.constants
+        const_filt = np.logical_and(child_2.command_array[:, 0] == 1,
+                                    child_2.command_array[:, 1] != -1)
+        child_2.command_array[const_filt, 1] += num_p_1_consts
+
+    @staticmethod
+    def _crossover_command_arrays(child_1, child_2, parent_1):
+        ag_size = parent_1.command_array.shape[0]
+        cross_point = np.random.randint(1, ag_size - 1)
+        child_1.command_array[cross_point:] = \
+            child_2.command_array[cross_point:]
+        child_2.command_array[cross_point:] = \
+            parent_1.command_array[cross_point:]

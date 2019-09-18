@@ -99,11 +99,7 @@ def test_crossover_keeps_correct_manual_constants(manual_constants_crossover,
                                                   manual_constants_parents):
     np.random.seed(0)
     parent_1, parent_2 = manual_constants_parents
-    # print(parent_1)
-    # print(parent_2)
     child_1, child_2 = manual_constants_crossover(parent_1, parent_2)
-    # print(child_1.constants)
-    # print(child_2.constants)
     np.testing.assert_array_almost_equal(child_1.constants, [5.0, 3.0])
     assert not child_2.constants
 
