@@ -41,40 +41,28 @@ class AGraphCrossover(Crossover):
         child_1 = parent_1.copy()
         child_2 = parent_2.copy()
 
+        num_p_1_consts = len(parent_1.constants)
+        child_1.constants = parent_1.constants + parent_2.constants
+        child_2.constants = parent_1.constants + parent_2.constants
+        const_filt = np.logical_and(child_2.command_array[:, 0] == 1,
+                                    child_2.command_array[:, 1] != -1)
+        child_2.command_array[const_filt, 1] += num_p_1_consts
+
         ag_size = parent_1.command_array.shape[0]
         cross_point = np.random.randint(1, ag_size-1)
         child_1.command_array[cross_point:] = \
-            parent_2.command_array[cross_point:]
+            child_2.command_array[cross_point:]
         child_2.command_array[cross_point:] = \
             parent_1.command_array[cross_point:]
 
-        if self._manual_constants:
-            self._track_constants(parent_1, parent_2, child_1, cross_point)
-            self._track_constants(parent_2, parent_1, child_2, cross_point)
-
         # TODO can we shift this responsibility to agraph?
-        child_1.notify_command_array_modification()
-        child_2.notify_command_array_modification()
+        child_1.notify_command_array_modification(
+                self._component_generator.random_numerical_constant)
+        child_2.notify_command_array_modification(
+                self._component_generator.random_numerical_constant)
 
         child_age = max(parent_1.genetic_age, parent_2.genetic_age)
         child_1.genetic_age = child_age
         child_2.genetic_age = child_age
 
         return child_1, child_2
-
-    def _track_constants(self, parent_start, parent_end, child, cross_point):
-        child.force_renumber_constants()
-        child.constants = [0., ]*child.num_constants
-        for i, (command, param1, _) in enumerate(child.command_array):
-            if command == 1 and param1 != -1:
-                if i < cross_point:
-                    parent = parent_start
-                else:
-                    parent = parent_end
-                old_constant_num = parent.command_array[i, 1]
-                if old_constant_num == -1:
-                    constant = \
-                        self._component_generator.random_numerical_constant()
-                else:
-                    constant = parent.constants[old_constant_num]
-                child.constants[param1] = constant

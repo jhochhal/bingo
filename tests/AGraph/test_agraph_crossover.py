@@ -29,12 +29,14 @@ def manual_constants_parents():
                                        [1, -1, -1],
                                        [6, 0, 0]])
     parent_1.set_local_optimization_params([5.0, ])
+    parent_1.notify_command_array_modification()
     parent_2 = AGraph()
     parent_2.command_array = np.array([[0, 0, 0],  # cos(x_0 + 3.0)
                                        [1, 0, 0],
                                        [2, 0, 1],
                                        [7, 2, 2]])
     parent_2.set_local_optimization_params([3.0, ])
+    parent_2.notify_command_array_modification()
     return parent_1, parent_2
 
 
@@ -97,7 +99,11 @@ def test_crossover_keeps_correct_manual_constants(manual_constants_crossover,
                                                   manual_constants_parents):
     np.random.seed(0)
     parent_1, parent_2 = manual_constants_parents
+    # print(parent_1)
+    # print(parent_2)
     child_1, child_2 = manual_constants_crossover(parent_1, parent_2)
+    # print(child_1.constants)
+    # print(child_2.constants)
     np.testing.assert_array_almost_equal(child_1.constants, [5.0, 3.0])
     assert not child_2.constants
 

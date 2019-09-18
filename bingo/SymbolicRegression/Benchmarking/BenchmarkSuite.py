@@ -3,6 +3,9 @@ This Benchmark Suite module contains a wrapper around the symbolic regression
 benchmarks which are defined in the BenchmarkDefinitions Module.  The wrapper
 allows for easier filtering and automatic running of benchmarks.
 """
+import numpy as np
+from scipy import stats
+
 from . import BenchmarkDefinitions
 
 
@@ -95,7 +98,9 @@ class BenchmarkSuite:
         for bench in self:
             bench_training_results = []
             bench_testing_results = []
-            for _ in range(repeats):
+            print(bench.name)
+            for i in range(repeats):
+                print(i)
                 benchmark_test.train(bench.training_data)
                 bench_training_results.append(
                         benchmark_test.score(bench.training_data))
@@ -105,3 +110,11 @@ class BenchmarkSuite:
             testing_results.append(bench_testing_results)
         return training_results, testing_results
 
+
+def compare_benchmark_suite_results(results_a_raw, results_b_raw):
+    results_a = np.array(results_a_raw).flatten()
+    results_b = np.array(results_b_raw).flatten()
+    _, less_sig = stats.mannwhitneyu(results_a, results_b, alternative="less")
+    _, greater_sig = stats.mannwhitneyu(results_a, results_b, alternative="greater")
+    _, notequal_sig = stats.mannwhitneyu(results_a, results_b, alternative="two-sided")
+    print(less_sig, greater_sig, notequal_sig)

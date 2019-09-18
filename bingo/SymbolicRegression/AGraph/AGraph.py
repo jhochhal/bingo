@@ -69,17 +69,13 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
     constants
     num_constants
     """
-    def __init__(self, manual_constants=False):
-        self._create_new_instance(manual_constants)
-
-    def _create_new_instance(self, manual_constants):
+    def __init__(self):
         super().__init__()
         self._command_array = np.empty([0, 3], dtype=int)
         self._short_command_array = np.empty([0, 3], dtype=int)
         self._constants = []
         self._needs_opt = False
         self._num_constants = 0
-        self._manual_constants = manual_constants 
     
     def is_cpp(self):
         return False
@@ -111,48 +107,46 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
         self._command_array = command_array
         self._fitness = None
         self._fit_set = False
-        self._process_modified_command_array()
 
-    def notify_command_array_modification(self):
+    def notify_command_array_modification(self, new_const_func=None):
         """Notify individual of inplace modification of its command array"""
         self._fitness = None
         self._fit_set = False
-        self._process_modified_command_array()
+        self._process_modified_command_array(new_const_func)
 
-    def force_renumber_constants(self):
-        """force the renumbering of constants"""
+    def _process_modified_command_array(self, new_const_func):
         util = self.get_utilized_commands()
-        self._renumber_constants(util)
 
-    def _process_modified_command_array(self):
-        if not self._manual_constants:
-            util = self.get_utilized_commands()
-
-            self._needs_opt = self._check_optimization_requirement(util)
-            if self._needs_opt:
-                self._renumber_constants(util)
+        self._needs_opt = self._check_optimization_requirement(util)
+        self._renumber_constants(util, new_const_func)
 
         self._short_command_array = Backend.simplify_stack(self._command_array)
 
     def _check_optimization_requirement(self, util):
-        for i in range(self._command_array.shape[0]):
-            if util[i]:
-                if self._command_array[i][0] == 1:
-                    if self._command_array[i][1] == -1 or \
-                            self._command_array[i][1] >= len(self._constants):
-                        return True
+        for utilized, (operator, param, _) in zip(util, self._command_array):
+            if utilized and operator == 1 and param == -1:
+                return True
         return False
 
-    def _renumber_constants(self, util):
+    def _renumber_constants(self, util, new_const_func):
         const_num = 0
-        for i in range(self._command_array.shape[0]):
+        new_constants = []
+        for i, utilized in enumerate(util):
             if self._command_array[i][0] == 1:
-                if util[i]:
+                if utilized:
+                    const_param = self._command_array[i][1]
+                    if const_param == -1:
+                        new_const = 0. if new_const_func is None \
+                            else new_const_func()
+                    else:
+                        new_const = self._constants[const_param]
+                    new_constants.append(new_const)
                     self._command_array[i] = (1, const_num, const_num)
                     const_num += 1
                 else:
                     self._command_array[i] = (1, -1, -1)
         self._num_constants = const_num
+        self._constants = new_constants
 
     def needs_local_optimization(self):
         """The Agraph needs local optimization.
@@ -207,7 +201,7 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
     def evaluate_equation_at(self, x):
         """Evaluate the AGraph equation.
 
-        Evaluation of the Agraph equation at points x.
+        Evaluation of the AGraph equation at points x.
 
         Parameters
         ----------
@@ -420,4 +414,3 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
         agraph_duplicate._constants = list(self._constants)
         agraph_duplicate._needs_opt = self._needs_opt
         agraph_duplicate._num_constants = self._num_constants
-        agraph_duplicate._manual_constants = self._manual_constants

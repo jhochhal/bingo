@@ -33,6 +33,23 @@ def test_generate(sample_component_generator):
                                   expected_command_array)
 
 
+def test_generate_with_constants(sample_component_generator):
+    np.random.seed(1)
+    expected_command_array = np.array([[1, -1, -1],
+                                       [0,  1,  1],
+                                       [1,  0,  0],
+                                       [1, -1, -1],
+                                       [1,  1,  1],
+                                       [2,  2,  4]], dtype=int)
+    expected_constants = np.array([-59.109550053696516, 75.62348727818909])
+    generate_agraph = AGraphGenerator(6, sample_component_generator)
+    agraph = generate_agraph()
+    np.testing.assert_array_equal(agraph.command_array,
+                                  expected_command_array)
+    np.testing.assert_array_almost_equal(agraph.constants,
+                                         expected_constants)
+
+
 def test_generate_manual_constants():
     np.random.seed(0)
     generator = ComponentGenerator(input_x_dimension=1,

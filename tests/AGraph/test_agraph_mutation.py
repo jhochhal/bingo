@@ -154,6 +154,9 @@ def test_pruning_mutation(mutation_parent, sample_component_generator):
         p_stack = mutation_parent.command_array
         c_stack = child.command_array
         changes = p_stack != c_stack
+        for i, op in enumerate(p_stack[:, 0]):
+            if op == 1:
+                changes[i] = False
 
         p_changes = p_stack[changes]
         c_changes = c_stack[changes]
@@ -258,12 +261,13 @@ def test_new_manual_constants_added(terminal_only_agraph,
 
 def test_multiple_manual_constsnt_mutations_for_consistency():
     np.random.seed(0)
-    test_graph = AGraph(manual_constants=True)
+    test_graph = AGraph()
     test_graph.command_array = np.array([[1, -1, -1],
                                          [1, -1, -1],
                                          [1, -1, -1],
                                          [1, 0, 0]])
     test_graph.set_local_optimization_params([1.0, ])
+    test_graph.notify_command_array_modification()
     comp_generator = ComponentGenerator(input_x_dimension=2,
                                         automatic_constant_optimization=False)
     comp_generator.add_operator(2)

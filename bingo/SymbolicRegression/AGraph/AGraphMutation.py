@@ -92,11 +92,9 @@ class AGraphMutation(Mutation):
         mutation_algorithm = self._mutation_function_pmf.draw_sample()
         mutation_algorithm(child)
 
-        if self._manual_constants:
-            self._track_constants(parent, child)
-
         # TODO can we shift this responsibility to agraph?
-        child.notify_command_array_modification()
+        child.notify_command_array_modification(
+                self._component_generator.random_numerical_constant)
 
         return child
 
@@ -120,29 +118,6 @@ class AGraphMutation(Mutation):
                                old_command)
         self._last_mutation_location = mutation_location
         self._last_mutation_type = COMMAND_MUTATION
-
-    def _track_constants(self, parent, child):
-        child.force_renumber_constants()
-        child.constants = [0., ]*child.num_constants
-        for i, (command, param1, _) in enumerate(child.command_array):
-            if command == 1 and param1 != -1:
-                if i == self._last_mutation_location:
-                    if self._last_mutation_type == PARAMETER_MUTATION:
-                        old_constant_num = parent.command_array[i, 1]
-                        constant = \
-                            self._component_generator.random_numerical_constant(
-                                parent.constants[old_constant_num])
-                    else:
-                        constant = \
-                            self._component_generator.random_numerical_constant()
-                else:
-                    old_constant_num = parent.command_array[i, 1]
-                    if old_constant_num == -1:
-                        constant = \
-                            self._component_generator.random_numerical_constant()
-                    else:
-                        constant = parent.constants[old_constant_num]
-                child.constants[param1] = constant
 
     def _mutate_node(self, individual):
         mutation_location = self._get_random_mutation_location(individual)
