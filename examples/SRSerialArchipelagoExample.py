@@ -24,7 +24,7 @@ def init_x_vals(start, stop, num_points):
 def equation_eval(x):
     return x**2 + 3.5*x**3
 
-def execute_generational_steps():
+def main():
     x = init_x_vals(-10, 10, 100)
     y = equation_eval(x)
     training_data = ExplicitTrainingData(x, y)
@@ -34,7 +34,7 @@ def execute_generational_steps():
     component_generator.add_operator(3)
     component_generator.add_operator(4)
 
-    crossover = AGraphCrossover()
+    crossover = AGraphCrossover(component_generator)
     mutation = AGraphMutation(component_generator)
 
     agraph_generator = AGraphGenerator(STACK_SIZE, component_generator)
@@ -47,15 +47,15 @@ def execute_generational_steps():
                       mutation, 0.4, 0.4, POP_SIZE)
 
     island = Island(ea, agraph_generator, POP_SIZE)
-    archipelago = SerialArchipelago(island)
+    archipelago = SerialArchipelago(island, num_islands=2)
 
-    if archipelago.run_islands(500, 100, 10):
-        print(archipelago.get_best_individual().get_latex_string())
+    evo_result = archipelago.evolve_until_convergence(500, 1e-5, 10)
+    if evo_result.success:
+        print("best_individual: ", archipelago.get_best_individual())
+        print("fitness: ", archipelago.get_best_fitness())
+        print("number of generations: ", evo_result.ngen)
     else:
         print("Failed.")
-
-def main():
-    execute_generational_steps()
 
 if __name__ == '__main__':
     main()
