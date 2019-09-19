@@ -27,17 +27,16 @@ class MultipleFloatChromosome(MultipleValueChromosome, ChromosomeInterface):
             needs_opt_list = []
         self._needs_opt_list = needs_opt_list
 
-    def needs_local_optimization(self):
-        """Does the individual need local optimization
-
-        Returns
-        -------
-        bool
-            Individual needs optimization
-        """
+    @property
+    def needs_continuous_opt(self):
+        """Does the individual need local optimization"""
         if not self._needs_opt_list:
             return False
         return True
+
+    @needs_continuous_opt.setter
+    def needs_continuous_opt(self, value):
+        pass
 
     def get_number_local_optimization_params(self):
         """Get number of parameters in local optimization

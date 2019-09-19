@@ -90,7 +90,6 @@ def _set_all_funcs_agraph_data(test_graph):
                                          [11, 10, 0],
                                          [12, 11, 0]])
     test_graph.set_local_optimization_params([1.0, ])
-    test_graph.notify_command_array_modification()
     return test_graph
 
 
@@ -283,9 +282,9 @@ def test_setting_fitness_updates_fit_set_cpp(agraph):
     assert sample_agraph.fit_set
 
 
-def test_notify_command_array_modification(sample_agraph_1_list):
+def test_identify_command_array_modification(sample_agraph_1_list):
     assert sample_agraph_1_list.fit_set
-    sample_agraph_1_list.notify_command_array_modification()
+    sample_agraph_1_list.command_array[0, 2] = 99
     assert not sample_agraph_1_list.fit_set
 
 

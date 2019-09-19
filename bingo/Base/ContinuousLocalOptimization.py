@@ -42,6 +42,7 @@ MINIMIZE_SET = {
     # 'trust-krylov'
 }
 
+
 class ContinuousLocalOptimization(FitnessFunction):
     """Fitness evaluation metric for individuals.
 
@@ -143,7 +144,7 @@ class ContinuousLocalOptimization(FitnessFunction):
         float :
             The fitness of the invdividual
         """
-        if individual.needs_local_optimization():
+        if individual.needs_continuous_opt:
             self._optimize_params(individual)
         return self._evaluate_fitness(individual)
 
@@ -165,6 +166,7 @@ class ContinuousLocalOptimization(FitnessFunction):
         params = self._run_algorithm_for_optimization(
             self._sub_routine_for_fit_function, individual, c_0)
         individual.set_local_optimization_params(params)
+        individual.needs_continuous_opt = False
 
     def _sub_routine_for_fit_function(self, params, individual):
         individual.set_local_optimization_params(params)
@@ -195,15 +197,16 @@ class ChromosomeInterface(metaclass=ABCMeta):
     An interface to be used on Chromosomes that will be using continuous local
     optimization.
     """
+    @property
     @abstractmethod
-    def needs_local_optimization(self):
+    def needs_continuous_opt(self):
         """Does the individual need local optimization
-
-        Returns
-        -------
-        bool
-            Individual needs optimization
         """
+        raise NotImplementedError
+
+    @needs_continuous_opt.setter
+    @abstractmethod
+    def needs_continuous_opt(self, value):
         raise NotImplementedError
 
     @abstractmethod

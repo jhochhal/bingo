@@ -43,14 +43,10 @@ class AGraphCrossover(Crossover):
 
         self._modify_children_for_tracking_constants(child_1, child_2,
                                                      parent_1, parent_2)
-
         self._crossover_command_arrays(child_1, child_2, parent_1)
-
-        # TODO can we shift this responsibility to agraph?
-        child_1.notify_command_array_modification(
-                self._component_generator.random_numerical_constant)
-        child_2.notify_command_array_modification(
-                self._component_generator.random_numerical_constant)
+        if self._manual_constants:
+            self._insert_manual_constants(child_1)
+            self._insert_manual_constants(child_2)
 
         child_age = max(parent_1.genetic_age, parent_2.genetic_age)
         child_1.genetic_age = child_age
@@ -76,3 +72,8 @@ class AGraphCrossover(Crossover):
             child_2.command_array[cross_point:]
         child_2.command_array[cross_point:] = \
             parent_1.command_array[cross_point:]
+
+    def _insert_manual_constants(self, individual):
+        for i in individual.find_inserted_constants():
+            individual.constants[i] = \
+                self._component_generator.random_numerical_constant()

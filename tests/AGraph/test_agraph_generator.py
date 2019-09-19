@@ -42,6 +42,7 @@ def test_generate_with_constants(sample_component_generator):
                                        [1,  1,  1],
                                        [2,  2,  4]], dtype=int)
     expected_constants = np.array([-59.109550053696516, 75.62348727818909])
+    sample_component_generator.automatic_constant_optimization = False
     generate_agraph = AGraphGenerator(6, sample_component_generator)
     agraph = generate_agraph()
     np.testing.assert_array_equal(agraph.command_array,

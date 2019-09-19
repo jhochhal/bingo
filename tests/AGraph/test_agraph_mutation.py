@@ -267,7 +267,6 @@ def test_multiple_manual_constsnt_mutations_for_consistency():
                                          [1, -1, -1],
                                          [1, 0, 0]])
     test_graph.set_local_optimization_params([1.0, ])
-    test_graph.notify_command_array_modification()
     comp_generator = ComponentGenerator(input_x_dimension=2,
                                         automatic_constant_optimization=False)
     comp_generator.add_operator(2)

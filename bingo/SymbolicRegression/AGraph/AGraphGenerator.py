@@ -39,8 +39,8 @@ class AGraphGenerator(Generator):
         """
         individual = AGraph()
         individual.command_array = self._create_command_array()
-        individual.notify_command_array_modification(
-                self.component_generator.random_numerical_constant)
+        if self._manual_constants:
+            self._insert_manual_constants(individual)
         return individual
 
     def _create_command_array(self):
@@ -48,3 +48,8 @@ class AGraphGenerator(Generator):
         for i in range(self.agraph_size):
             command_array[i] = self.component_generator.random_command(i)
         return command_array
+
+    def _insert_manual_constants(self, individual):
+        for i in individual.find_inserted_constants():
+            individual.constants[i] = \
+                self.component_generator.random_numerical_constant()

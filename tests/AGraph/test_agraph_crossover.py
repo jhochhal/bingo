@@ -29,14 +29,12 @@ def manual_constants_parents():
                                        [1, -1, -1],
                                        [6, 0, 0]])
     parent_1.set_local_optimization_params([5.0, ])
-    parent_1.notify_command_array_modification()
     parent_2 = AGraph()
     parent_2.command_array = np.array([[0, 0, 0],  # cos(x_0 + 3.0)
                                        [1, 0, 0],
                                        [2, 0, 1],
                                        [7, 2, 2]])
     parent_2.set_local_optimization_params([3.0, ])
-    parent_2.notify_command_array_modification()
     return parent_1, parent_2
 
 
@@ -59,7 +57,9 @@ def test_crossover_is_single_point(sample_component_generator,
                                   crossover_parents[0].command_array,
                                   crossover_parents[1].command_array):
         if not crossover_point_reached:
-            if np.array_equal(c_1, p_1):
+            if c_1[0] == 1:
+                pass  # constants could have different constant numbers
+            elif np.array_equal(c_1, p_1):
                 np.testing.assert_array_equal(c_2, p_2)
             elif np.array_equal(c_1, p_2):
                 crossover_point_reached = True

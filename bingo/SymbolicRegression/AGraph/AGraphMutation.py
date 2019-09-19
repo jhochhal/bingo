@@ -92,11 +92,15 @@ class AGraphMutation(Mutation):
         mutation_algorithm = self._mutation_function_pmf.draw_sample()
         mutation_algorithm(child)
 
-        # TODO can we shift this responsibility to agraph?
-        child.notify_command_array_modification(
-                self._component_generator.random_numerical_constant)
+        if self._manual_constants:
+            self._insert_manual_constants(child)
 
         return child
+
+    def _insert_manual_constants(self, individual):
+        for i in individual.find_inserted_constants():
+            individual.constants[i] = \
+                self._component_generator.random_numerical_constant()
 
     @staticmethod
     def _get_random_mutation_location(child):

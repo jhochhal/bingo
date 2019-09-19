@@ -52,8 +52,8 @@ def test_generator_function_produces_floats():
         MultipleFloatChromosomeGenerator(bad_function, LIST_SIZE)
 
 def test_needs_local_optimization(opt_individual, individual):
-    assert not individual.needs_local_optimization()
-    assert opt_individual.needs_local_optimization()
+    assert not individual.needs_continuous_opt
+    assert opt_individual.needs_continuous_opt
 
 def test_get_local_optimization_params(opt_individual):
     assert opt_individual.get_number_local_optimization_params() == 3
