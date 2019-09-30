@@ -5,7 +5,7 @@ graph individuals.
 """
 import numpy as np
 
-from .AGraph import AGraph
+from .AGraph import AGraph, COMMAND_ARRAY_DTYPE
 from ...Base.Generator import Generator
 from ...Util.ArgumentValidation import argument_validation
 
@@ -44,7 +44,8 @@ class AGraphGenerator(Generator):
         return individual
 
     def _create_command_array(self):
-        command_array = np.empty((self.agraph_size, 3), dtype=int)
+        command_array = np.empty((self.agraph_size, 3),
+                                 dtype=COMMAND_ARRAY_DTYPE)
         for i in range(self.agraph_size):
             command_array[i] = self.component_generator.random_command(i)
         return command_array

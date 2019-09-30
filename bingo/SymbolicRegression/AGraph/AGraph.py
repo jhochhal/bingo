@@ -57,6 +57,7 @@ except ImportError:
 
 LOGGER = logging.getLogger(__name__)
 
+COMMAND_ARRAY_DTYPE = np.int16
 
 class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
     """Acyclic graph representation of an equation.
@@ -71,8 +72,10 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
     """
     def __init__(self):
         super().__init__()
-        self._command_array = np.empty([0, 3], dtype=int)
-        self._short_command_array = np.empty([0, 3], dtype=int)
+        self._command_array = np.empty([0, 3],
+                                       dtype=COMMAND_ARRAY_DTYPE)
+        self._short_command_array = np.empty([0, 3],
+                                             dtype=COMMAND_ARRAY_DTYPE)
         self._constants = []
         self._needs_opt = False
         self._command_array_signature = self._hash_command_array()
@@ -349,17 +352,19 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
         agraph_duplicate._constants_signature = self._constants_signature
 
     def _update_graph(self):
-        if self._has_command_array_been_modified():
+        command_array_signature = self._hash_command_array()
+        constants_signature = self._hash_constants()
+        if self._command_array_signature != command_array_signature:
             self._process_modified_command_array()
             self._fit_set = False
             self._fitness = None
-            self._needs_opt = True
-            self._command_array_signature = self._hash_command_array()
-        if self._has_constants_been_modified():
+            # self._needs_opt = True
+            self._command_array_signature = command_array_signature
+        if self._constants_signature != constants_signature:
             self._fit_set = False
             self._fitness = None
             self._needs_opt = True
-            self._constants_signature = self._hash_constants()
+            self._constants_signature = constants_signature
 
     def _has_command_array_been_modified(self):
         return self._command_array_signature != self._hash_command_array()
@@ -375,8 +380,8 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
 
     def _process_modified_command_array(self):
         inserted_constants = self._renumber_constants()
-        # if len(inserted_constants) > 0:
-        #     self._needs_opt = True
+        if len(inserted_constants) > 0:
+            self._needs_opt = True
         self._short_command_array = Backend.simplify_stack(self._command_array)
 
     def _renumber_constants(self):
@@ -384,20 +389,21 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
         const_num = 0
         inserted_constants = []
         new_constants = []
-        for i, (utilized, (op, param, _)) in \
-                enumerate(zip(util, self._command_array)):
-            if op == 1:
-                if utilized:
-                    if param == -1:
-                        new_const = 0.
-                        inserted_constants.append(const_num)
-                    else:
-                        new_const = self._constants[param]
-                    new_constants.append(new_const)
-                    self._command_array[i] = (1, const_num, const_num)
-                    const_num += 1
+        const_commands = self._command_array[:, 0] == 1
+        used_const_commands = np.logical_and(const_commands, util)
+        unused_const_commands = np.logical_and(const_commands,
+                                               np.logical_not(util))
+        self._command_array[unused_const_commands] = (1, -1, -1)
+        for i, used in enumerate(used_const_commands):
+            if used:
+                if self._command_array[i, 1] == -1:
+                    new_const = 0.
+                    inserted_constants.append(const_num)
                 else:
-                    self._command_array[i] = (1, -1, -1)
+                    new_const = self._constants[self._command_array[i, 1]]
+                new_constants.append(new_const)
+                self._command_array[i] = (1, const_num, const_num)
+                const_num += 1
         self._constants = new_constants
         return inserted_constants
 
