@@ -388,6 +388,8 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
         old_const_inds = self._command_array[used_const_commands, 1]
         self._command_array[used_const_commands, 1] = \
             range(old_const_inds.shape[0])
+        self._command_array[used_const_commands, 2] = \
+            range(old_const_inds.shape[0])
         inserted_constants = []
         new_constants = []
         for i, j in enumerate(old_const_inds):

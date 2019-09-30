@@ -92,6 +92,7 @@ def _set_sample_agraph_1_data(test_graph):
                                          [2, 3, 1]])
     test_graph.set_local_optimization_params([1.0, ])
     test_graph.genetic_age = 10
+    _ = test_graph.fit_set
     test_graph.fitness = 1
 
 
@@ -104,6 +105,6 @@ def _set_sample_agraph_2_data(test_graph):
                                          [6, 3, 0]], dtype=int)
     test_graph.set_local_optimization_params([0, 1.0])
     test_graph.genetic_age = 20
+    _ = test_graph.fit_set
     test_graph.fitness = 2
-    return test_graph
 
