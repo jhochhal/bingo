@@ -366,12 +366,6 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
             self._needs_opt = True
             self._constants_signature = constants_signature
 
-    def _has_command_array_been_modified(self):
-        return self._command_array_signature != self._hash_command_array()
-
-    def _has_constants_been_modified(self):
-        return self._constants_signature != self._hash_constants()
-
     def _hash_command_array(self):
         return hash(self._command_array.data.tobytes())
 
@@ -386,24 +380,22 @@ class AGraph(Equation, ContinuousLocalOptimization.ChromosomeInterface):
 
     def _renumber_constants(self):
         util = Backend.get_utilized_commands(self._command_array)
-        const_num = 0
-        inserted_constants = []
-        new_constants = []
         const_commands = self._command_array[:, 0] == 1
         used_const_commands = np.logical_and(const_commands, util)
         unused_const_commands = np.logical_and(const_commands,
                                                np.logical_not(util))
         self._command_array[unused_const_commands] = (1, -1, -1)
-        for i, used in enumerate(used_const_commands):
-            if used:
-                if self._command_array[i, 1] == -1:
-                    new_const = 0.
-                    inserted_constants.append(const_num)
-                else:
-                    new_const = self._constants[self._command_array[i, 1]]
-                new_constants.append(new_const)
-                self._command_array[i] = (1, const_num, const_num)
-                const_num += 1
+        old_const_inds = self._command_array[used_const_commands, 1]
+        self._command_array[used_const_commands, 1] = \
+            range(old_const_inds.shape[0])
+        inserted_constants = []
+        new_constants = []
+        for i, j in enumerate(old_const_inds):
+            if j == -1:
+                new_constants.append(0.)
+                inserted_constants.append(i)
+            else:
+                new_constants.append(self._constants[j])
         self._constants = new_constants
         return inserted_constants
 
