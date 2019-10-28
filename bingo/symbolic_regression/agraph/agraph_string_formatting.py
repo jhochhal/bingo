@@ -1,4 +1,4 @@
-from .AGraphMaps import STACK_PRINT_MAP, LATEX_PRINT_MAP, CONSOLE_PRINT_MAP
+from .maps import STACK_PRINT_MAP, LATEX_PRINT_MAP, CONSOLE_PRINT_MAP
 
 
 def get_formatted_string(style, command_array, constants):

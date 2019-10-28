@@ -46,7 +46,7 @@ Node      Name                                     Math
 import logging
 import numpy as np
 
-from .AGraphStringFormatting import get_formatted_string
+from .agraph_string_formatting import get_formatted_string
 from ..equation import Equation
 from ...local_optimizers import continuous_local_opt
 
