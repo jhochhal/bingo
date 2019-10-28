@@ -8,16 +8,16 @@ import inspect
 import dill
 from mpi4py import MPI
 from unittest.mock import Mock
-from bingo.Base.MultipleValues import SinglePointCrossover, \
-                                      SinglePointMutation, \
-                                      MultipleValueChromosomeGenerator
-from bingo.Base.Island import Island
-from bingo.Base.MuPlusLambdaEA import MuPlusLambda
-from bingo.Base.TournamentSelection import Tournament
-from bingo.Base.Evaluation import Evaluation
-from bingo.Base.FitnessFunction import FitnessFunction
-from bingo.Base.ParallelArchipelago import ParallelArchipelago, \
-    load_parallel_archipelago_from_file
+from bingo.chromosomes.multiple_values import SinglePointCrossover, \
+                                              SinglePointMutation, \
+                                              MultipleValueChromosomeGenerator
+from bingo.evolutionary_optimizers.island import Island
+from bingo.evolutionary_algorithms.mu_plus_lambda import MuPlusLambda
+from bingo.selection.tournament import Tournament
+from bingo.evaluation.evaluation import Evaluation
+from bingo.evaluation.fitness_function import FitnessFunction
+from bingo.evolutionary_optimizers.parallel_archipelago \
+    import ParallelArchipelago, load_parallel_archipelago_from_file
 
 POP_SIZE = 5
 SELECTION_SIZE = 10
@@ -133,7 +133,7 @@ def test_non_blocking_evolution():
     steps = 200
     island = num_island(COMM_RANK)
     archipelago = ParallelArchipelago(island, sync_frequency=10,
-                                      non_blocking=True)
+                                       non_blocking=True)
     archipelago.evolve(steps)
     island_age = archipelago._island.generational_age
     archipelago_age = archipelago.generational_age
@@ -143,7 +143,7 @@ def test_non_blocking_evolution():
 def test_convergence():
     island = num_island(COMM_RANK)
     archipelago = ParallelArchipelago(island, sync_frequency=10,
-                                      non_blocking=True)
+                                       non_blocking=True)
     result = archipelago.evolve_until_convergence(max_generations=100,
                                                   fitness_threshold=0,
                                                   convergence_check_frequency=25)
@@ -153,7 +153,7 @@ def test_convergence():
 def test_dump_then_load_equal_procs():
     island = num_island(COMM_RANK)
     archipelago = ParallelArchipelago(island, sync_frequency=10,
-                                      non_blocking=True)
+                                       non_blocking=True)
     file_name = "testing_pa_dump_and_load_eq.pkl"
     archipelago.dump_to_file(file_name)
     archipelago = \
@@ -168,7 +168,7 @@ def test_dump_then_load_equal_procs():
 def test_dump_then_load_more_procs():
     island = num_island(COMM_RANK)
     archipelago = ParallelArchipelago(island, sync_frequency=10,
-                                      non_blocking=True)
+                                       non_blocking=True)
     file_name = "testing_pa_dump_and_load_gt.pkl"
     archipelago.dump_to_file(file_name)
     _remove_proc_from_pickle(file_name)
@@ -196,7 +196,7 @@ def _remove_proc_from_pickle(file_name):
 def test_dump_then_load_less_procs():
     island = num_island(COMM_RANK)
     archipelago = ParallelArchipelago(island, sync_frequency=10,
-                                      non_blocking=True)
+                                       non_blocking=True)
     file_name = "testing_pa_dump_and_load_lt.pkl"
     archipelago.dump_to_file(file_name)
     _add_proc_to_pickle(file_name)
@@ -230,6 +230,7 @@ def test_stale_checkpoint_removal():
                      not os.path.isfile("stale_check_1.pkl"),
                      not os.path.isfile("stale_check_2.pkl"),
                      os.path.isfile("stale_check_3.pkl")]
+    COMM.barrier()
     if COMM_RANK == 0:
         os.remove("stale_check_3.pkl")
     return mpi_assert_true(all(correct_files))
@@ -321,6 +322,9 @@ def driver():
         if num_failures > 0:
             print(num_failures, "failed,", end=" ")
         print(num_success, "passed ==========")
+
+    if num_failures > 0:
+        exit(-1)
 
 
 if __name__ == "__main__":
