@@ -77,10 +77,11 @@ class IslandStatsPrinter(StatsPrinter):
 
 def explicit_regression_benchmark():
     island = init_island()
-    result = island.evolve_until_convergence(100, ERROR_TOLERANCE)
-    print("time:", result.time)
-    print("generations:", result.ngen)
-    print("fevals", island.get_fitness_evaluation_count())
+    while island.best_individual().fitness > ERROR_TOLERANCE:
+        island.execute_generational_step()
+    print("Finished with age", island.generational_age,
+          "and evals", island._ea.evaluation.fitness_function.eval_count)
+    
 
 def do_benchmarking():
     printer = IslandStatsPrinter()
