@@ -82,13 +82,12 @@ def explicit_regression_benchmark():
     print("generations:", result.ngen)
     print("fevals", island.get_fitness_evaluation_count())
 
-
 def do_benchmarking():
     printer = IslandStatsPrinter()
     printer.add_stats("Explicit Regression",
                       timeit.repeat(explicit_regression_benchmark,
-                                    number=4,
-                                    repeat=4))
+                                    number=3,
+                                    repeat=3))
     printer.print()
 
 
