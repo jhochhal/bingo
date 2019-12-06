@@ -81,7 +81,6 @@ def explicit_regression_benchmark():
         island.execute_generational_step()
     print("Finished with age", island.generational_age,
           "and evals", island._ea.evaluation.fitness_function.eval_count)
-    
 
 def do_benchmarking():
     printer = IslandStatsPrinter()
