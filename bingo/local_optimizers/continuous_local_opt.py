@@ -102,11 +102,15 @@ class ContinuousLocalOptimization(FitnessFunction):
         `fitness_function` must Be a valid `FitnessFunction` for the specified
         algorithm
     """
-    def __init__(self, fitness_function, algorithm='Nelder-Mead'):
-        self._check_algorithm_is_valid(algorithm)
-        self._check_root_alg_returns_vector(fitness_function, algorithm)
-        self._fitness_function = fitness_function
-        self._algorithm = algorithm
+
+    def __init__(self, fitness_function, algorithm='Nelder-Mead',
+                 tolerance=1e-6, options=None):
+         self._check_algorithm_is_valid(algorithm)
+         self._check_root_alg_returns_vector(fitness_function, algorithm)
+         self._fitness_function = fitness_function
+         self._algorithm = algorithm
+         self._tolerance = tolerance
+         self._options = options
 
     @property
     def training_data(self):
@@ -177,12 +181,14 @@ class ContinuousLocalOptimization(FitnessFunction):
             optimize_result = optimize.root(sub_routine, params,
                                             args=(individual),
                                             method=self._algorithm,
-                                            tol=1e-6)
+                                            tol=self._tolerance,
+                                            options=self._options)
         else:
             optimize_result = optimize.minimize(sub_routine, params,
                                                 args=(individual),
                                                 method=self._algorithm,
-                                                tol=1e-6)
+                                                tol=self._tolerance,
+                                                options=self._options)
         return optimize_result.x
 
     def _evaluate_fitness(self, individual):

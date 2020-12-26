@@ -17,14 +17,14 @@ class FitnessFunction(metaclass=ABCMeta):
     Parameters
     ----------
     training_data :
-        Optional) data that can be used in fitness evaluation
+                   (Optional) data that can be used in fitness evaluation
 
     Attributes
     ----------
     eval_count : int
-        the number of evaluations that have been performed
+                 the number of evaluations that have been performed
     training_data :
-        (Optional) data that can be used in fitness evaluation
+                   (Optional) data that can be used in fitness evaluation
     """
     def __init__(self, training_data=None):
         self.eval_count = 0
@@ -37,7 +37,7 @@ class FitnessFunction(metaclass=ABCMeta):
         Parameters
         ----------
         individual : chromosomes
-            individual for which fitness will be calculated
+                     individual for which fitness will be calculated
 
         Notes
         -----
@@ -58,7 +58,7 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
     Parameters
     ----------
     training_data : ExplicitTrainingData
-        data that is used in fitness evaluation.
+                    data that is used in fitness evaluation.
     metric : str
         String defining the measure of error to use. Available options are:
         'mean absolute error', 'mean squared error', and
@@ -67,12 +67,16 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
     def __init__(self, training_data=None, metric="mae"):
         super().__init__(training_data)
 
+        self._rel_metric = False
         if metric in ["mean absolute error", "mae"]:
             self._metric = VectorBasedFunction._mean_absolute_error
         elif metric in ["mean squared error", "mse"]:
             self._metric = VectorBasedFunction._mean_squared_error
         elif metric in ["root mean squared error", "rmse"]:
             self._metric = VectorBasedFunction._root_mean_squared_error
+        elif metric in ["root mean squared relative error", "rmsre"]:
+            self._rel_metric = True
+            self._metric = VectorBasedFunction._root_mean_squared_relative_error
         else:
             raise KeyError("Invalid metric for Fitness Function")
 
@@ -85,7 +89,7 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
         Parameters
         ----------
         individual : chromosomes
-            individual for which fitness will be calculated
+                     individual for which fitness will be calculated
 
         Returns
         -------
@@ -93,7 +97,11 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
            fitness of the individual
         """
         fitness_vector = self.evaluate_fitness_vector(individual)
-        return self._metric(fitness_vector)
+        if not self._rel_metric:
+            return self._metric(fitness_vector)
+        else:
+            f_of_x = individual.evaluate_equation_at(self.training_data.x)
+            return self._metric(fitness_vector, f_of_x)
 
     @abstractmethod
     def evaluate_fitness_vector(self, individual):
@@ -110,3 +118,8 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
     @staticmethod
     def _mean_squared_error(vector):
         return np.mean(np.square(vector))
+
+    @staticmethod
+    def _root_mean_squared_relative_error(vector, f_of_x):
+        del_X_rel_sqr = np.square(vector / f_of_x)
+        return np.sqrt(np.mean(del_X_rel_sqr))

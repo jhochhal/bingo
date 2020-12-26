@@ -39,11 +39,12 @@ Node      Name                                     Math
 7         cosine                                   :math:`cos(p1)`
 8         hyperbolic sine                          :math:`sinh(p1)`
 9         hyperbolic cosine                        :math:`cosh(p1)`
-10        exponential                              :math:`exp(p1)`
-11        logarithm                                :math:`log(|p1|)`
-12        power                                    :math:`|p1|^{p2}`
-13        absolute value                           :math:`|p1|`
-14        square root                              :math:`sqrt(|p1|)`
+10        hyperbolic tangent                       :math:`tanh(p1)`
+11        exponential                              :math:`exp(p1)`
+12        logarithm                                :math:`log(|p1|)`
+13        power                                    :math:`|p1|^{p2}`
+14        absolute value                           :math:`|p1|`
+15        square root                              :math:`sqrt(|p1|)`
 ========  =======================================  =================
 """
 import logging
@@ -55,8 +56,8 @@ from ...local_optimizers import continuous_local_opt
 from .operator_definitions import CONSTANT
 
 try:
-    from bingocpp.build import evaluation_backend
-    from bingocpp.build import simplification_backend
+    from bingocpp.build import symbolic_regression as evaluation_backend
+    from bingocpp.build import symbolic_regression as simplification_backend
 except ImportError:
     from .evaluation_backend import evaluation_backend
     from .simplification_backend import simplification_backend
@@ -90,6 +91,7 @@ class AGraph(Equation, continuous_local_opt.ChromosomeInterface):
 
         self._needs_opt = False
         self._modified = False
+        self._used_constant_commands = []
         self._use_simplification = use_simplification
 
     @property

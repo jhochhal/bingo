@@ -18,12 +18,12 @@ STACK_PRINT_MAP = {ADDITION: "({}) + ({})",
                    COS: "cos ({})",
                    SINH: "sinh ({})",
                    COSH: "cosh ({})",
+                   TANH: "tanh ({})",
                    EXPONENTIAL: "exp ({})",
                    LOGARITHM: "log ({})",
                    POWER: "({}) ^ ({})",
                    ABS: "abs ({})",
-                   SQRT: "sqrt ({})",
-                   SAFE_POWER: "(|{}|) ^ ({})"}
+                   SQRT: "sqrt ({})"}
 LATEX_PRINT_MAP = {ADDITION: "{} + {}",
                    SUBTRACTION: "{} - ({})",
                    MULTIPLICATION: "({})({})",
@@ -32,12 +32,12 @@ LATEX_PRINT_MAP = {ADDITION: "{} + {}",
                    COS: "cos{{ {} }}",
                    SINH: "sinh{{ {} }}",
                    COSH: "cosh{{ {} }}",
+                   TANH: "tanh{{ {} }}",
                    EXPONENTIAL: "exp{{ {} }}",
                    LOGARITHM: "log{{ {} }}",
                    POWER: "({})^{{ ({}) }}",
                    ABS: "|{}|",
-                   SQRT: "\\sqrt{{ {} }}",
-                   SAFE_POWER: "(|{}|)^{{ ({}) }}"}
+                   SQRT: "\\sqrt{{ {} }}"}
 CONSOLE_PRINT_MAP = {ADDITION: "{} + {}",
                      SUBTRACTION: "{} - ({})",
                      MULTIPLICATION: "({})({})",
@@ -46,12 +46,12 @@ CONSOLE_PRINT_MAP = {ADDITION: "{} + {}",
                      COS: "cos({})",
                      SINH: "sinh({})",
                      COSH: "cosh({})",
+                     TANH: "tanh({})",
                      EXPONENTIAL: "exp({})",
                      LOGARITHM: "log({})",
                      POWER: "({})^({})",
                      ABS: "|{}|",
-                     SQRT: "sqrt({})",
-                     SAFE_POWER: "(|{}|)^({})",}
+                     SQRT: "sqrt({})"}
 
 
 def get_formatted_string(eq_format, command_array, constants):

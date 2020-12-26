@@ -134,6 +134,17 @@ def _cosh_reverse_eval(reverse_index, param1, _param2, forward_eval,
     reverse_eval[param1] += \
         reverse_eval[reverse_index] * np.sinh(forward_eval[param1])
 
+# Hyperbolic Tangent
+def _tanh_forward_eval(param1, _param2, _x, _constants, forward_eval):
+    return np.tanh(forward_eval[param1])
+
+
+def _tanh_reverse_eval(reverse_index, param1, _param2, forward_eval,
+                      reverse_eval):
+    reverse_eval[param1] += \
+        reverse_eval[reverse_index] * (1. - np.tanh(forward_eval[param1])**2.)
+
+
 # Exponential
 def _exp_forward_eval(param1, _param2, _x, _constants, forward_eval):
     return np.exp(forward_eval[param1])
@@ -158,26 +169,11 @@ def _log_reverse_eval(reverse_index, param1, _param2, forward_eval,
 
 # Power
 def _pow_forward_eval(param1, param2, _x, _constants, forward_eval):
-    return np.power(forward_eval[param1], forward_eval[param2])
+    return np.power(np.abs(forward_eval[param1]), forward_eval[param2])
 
 
 def _pow_reverse_eval(reverse_index, param1, param2, forward_eval,
                       reverse_eval):
-    reverse_eval[param1] += reverse_eval[reverse_index] *\
-                            forward_eval[reverse_index] *\
-                            forward_eval[param2] / forward_eval[param1]
-    reverse_eval[param2] += reverse_eval[reverse_index] *\
-                            forward_eval[reverse_index] *\
-                            np.log(forward_eval[param1])
-
-
-# Safe Power
-def _safe_pow_forward_eval(param1, param2, _x, _constants, forward_eval):
-    return np.power(np.abs(forward_eval[param1]), forward_eval[param2])
-
-
-def _safe_pow_reverse_eval(reverse_index, param1, param2, forward_eval,
-                           reverse_eval):
     reverse_eval[param1] += reverse_eval[reverse_index] *\
                             forward_eval[reverse_index] *\
                             forward_eval[param2] / forward_eval[param1]
@@ -233,12 +229,12 @@ FORWARD_EVAL_MAP = {INTEGER: _integer_forward_eval,
                     COS: _cos_forward_eval,
                     SINH: _sinh_forward_eval,
                     COSH: _cosh_forward_eval,
+                    TANH: _tanh_forward_eval,
                     EXPONENTIAL: _exp_forward_eval,
                     LOGARITHM: _log_forward_eval,
                     POWER: _pow_forward_eval,
                     ABS: _abs_forward_eval,
-                    SQRT: _sqrt_forward_eval,
-                    SAFE_POWER: _safe_pow_forward_eval}
+                    SQRT: _sqrt_forward_eval}
 
 REVERSE_EVAL_MAP = {INTEGER: _integer_reverse_eval,
                     VARIABLE: _loadx_reverse_eval,
@@ -251,9 +247,9 @@ REVERSE_EVAL_MAP = {INTEGER: _integer_reverse_eval,
                     COS: _cos_reverse_eval,
                     SINH: _sinh_reverse_eval,
                     COSH: _cosh_reverse_eval,
+                    TANH: _tanh_reverse_eval,
                     EXPONENTIAL: _exp_reverse_eval,
                     LOGARITHM: _log_reverse_eval,
                     POWER: _pow_reverse_eval,
                     ABS: _abs_reverse_eval,
-                    SQRT: _sqrt_reverse_eval,
-                    SAFE_POWER: _safe_pow_reverse_eval}
+                    SQRT: _sqrt_reverse_eval}

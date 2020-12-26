@@ -51,9 +51,7 @@ class ExplicitRegression(VectorBasedFunction):
         self.eval_count += 1
         f_of_x = individual.evaluate_equation_at(self.training_data.x)
         error = f_of_x - self.training_data.y
-        if not self._relative:
-            return error.flatten()
-        return (error / self.training_data.y).flatten()
+        return error.flatten()
 
 
 class ExplicitTrainingData(TrainingData):
