@@ -97,11 +97,7 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
            fitness of the individual
         """
         fitness_vector = self.evaluate_fitness_vector(individual)
-        if not self._rel_metric:
-            return self._metric(fitness_vector)
-        else:
-            f_of_x = individual.evaluate_equation_at(self.training_data.x)
-            return self._metric(fitness_vector, f_of_x)
+        return self._metric(fitness_vector)
 
     @abstractmethod
     def evaluate_fitness_vector(self, individual):
@@ -120,6 +116,6 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
         return np.mean(np.square(vector))
 
     @staticmethod
-    def _root_mean_squared_relative_error(vector, f_of_x):
-        del_X_rel_sqr = np.square(vector / f_of_x)
+    def _root_mean_squared_relative_error(vector):
+        del_X_rel_sqr = np.square(vector / training_data.y)
         return np.sqrt(np.mean(del_X_rel_sqr))
