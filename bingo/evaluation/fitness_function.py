@@ -67,16 +67,12 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
     def __init__(self, training_data=None, metric="mae"):
         super().__init__(training_data)
 
-        self._rel_metric = False
         if metric in ["mean absolute error", "mae"]:
             self._metric = VectorBasedFunction._mean_absolute_error
         elif metric in ["mean squared error", "mse"]:
             self._metric = VectorBasedFunction._mean_squared_error
         elif metric in ["root mean squared error", "rmse"]:
             self._metric = VectorBasedFunction._root_mean_squared_error
-        elif metric in ["root mean squared relative error", "rmsre"]:
-            self._rel_metric = True
-            self._metric = VectorBasedFunction._root_mean_squared_relative_error
         else:
             raise KeyError("Invalid metric for Fitness Function")
 
@@ -97,10 +93,7 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
            fitness of the individual
         """
         fitness_vector = self.evaluate_fitness_vector(individual)
-        if self._rel_metric: 
-            return self._metric(fitness_vector, self.training_data)
-        else:
-            return self._metric(fitness_vector)
+        return self._metric(fitness_vector)
 
     @abstractmethod
     def evaluate_fitness_vector(self, individual):
@@ -117,8 +110,3 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
     @staticmethod
     def _mean_squared_error(vector):
         return np.mean(np.square(vector))
-
-    @staticmethod
-    def _root_mean_squared_relative_error(vector, training_data):
-        del_X_rel_sqr = np.square(vector / training_data.y)
-        return np.sqrt(np.mean(del_X_rel_sqr))
