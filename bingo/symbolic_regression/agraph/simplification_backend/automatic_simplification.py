@@ -253,6 +253,10 @@ def simplify_cos(expression):
         return ONE.copy()
     return expression
 
+def simplify_cosh(expression):
+    if expression.operands[0].is_zero():
+        return ONE.copy()
+    return expression
 
 def simplify_logarithm(expression):
     operand = expression.operands[0]
@@ -281,6 +285,7 @@ SIMPLIFICATION_FUNCTIONS = {
     SUBTRACTION: simplify_difference,
     SIN: simplify_sin,
     COS: simplify_cos,
+    COSH: simplify_cosh,
     LOGARITHM: simplify_logarithm,
     EXPONENTIAL: simplify_exponential,
     ABS: no_simplification,
