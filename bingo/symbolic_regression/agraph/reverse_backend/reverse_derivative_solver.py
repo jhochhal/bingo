@@ -13,13 +13,14 @@ def _reverse_eval(deriv_wrt_node,stack,constants):
         zero = [1,len(constants)-1,len(constants)-1]
     # 2. No variable Return 0
     X = [0,deriv_wrt_node,deriv_wrt_node]
-    if X not in stack:
+    if X not in stack.tolist():
         return np.array([zero]), constants
     
     # 3. Call paths
     row,col = stack.shape
     root = row-1
     paths, NUM, maxInd = DepthFirstSearch(root, stack, constants, deriv_wrt_node)
+
     # 4. No equation, Return constant 
     if maxInd == float('-inf'):
         try:
