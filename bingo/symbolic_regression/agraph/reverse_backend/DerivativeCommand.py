@@ -9,7 +9,7 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
 
     # 1. Insert zero array to stack
     newStack,zArrInd = findCommandIndex(newStack,zero)
-
+    info = {}
     # 2. Main algorithm
     for path in paths:
         const = paths[path]
@@ -30,26 +30,66 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
                 
         else:
             if n == 2:
-                newStack.append([4,indexes[0],indexes[1]])
+                cur = tuple(indexes[:2])
+                if cur in info:
+                    rInd = info[cur]
+                else:
+                    newStack.append([4,indexes[0],indexes[1]])
+                    info[cur] = len(newStack)-1
+                    rInd = len(newStack)-1
             else:
-                newStack.append([4,indexes[0],indexes[1]])
-                for i in range(2,len(indexes)):
-                    index = indexes[i]
-                    curL = len(newStack)-1
-                    newStack.append([4,index,curL])
+                mInd = None
+                for i in range(1,len(indexes)):
+                    cur = tuple(indexes[:i+1])
+                    if cur in info:
+                        mInd = len(cur)
+                        irInd = info[cur]
+                        
+                if mInd == None:
+                    newStack.append([4,indexes[0],indexes[1]])
+                    
+                    cur = tuple(indexes[:2])
+                    info[cur] = len(newStack)-1
+                    for i in range(2,len(indexes)):
+                        index = indexes[i]
+                        curL = len(newStack)-1
+                        newStack.append([4,index,curL])
+                        
+                        cur = tuple(indexes[:i+1])
+                        info[cur] = len(newStack)-1
+                    rInd = len(newStack)-1
+                    
+                else:
+                    if mInd > len(indexes)-1:
+                        rInd = irInd
+                    else:
+                        newStack.append([4,irInd,indexes[mInd]])
+                        cur = tuple(indexes[:mInd+1])
+                        info[cur] = len(newStack)-1
+                        if  mInd == len(indexes)-1:
+                            rInd = len(newStack)-1
+                        else:
+                            for i in range(mInd+1,len(indexes)):
+                                index = indexes[i]
+                                curL = len(newStack)-1
+                                newStack.append([4,index,curL])
+                                
+                                cur = tuple(indexes[:i+1])
+                                info[cur] = len(newStack)-1
+                            rInd = len(newStack)-1
+            if const==1:
+                curInd = rInd
 
-            if const==-1:
-                rInd = len(newStack)-1
+            elif const==-1:
                 newStack.append([3,zArrInd, rInd])
+                curInd = len(newStack)-1
                 
             elif abs(const)!=1:
-                row = len(newStack)-1
                 constants,cInd = findConstantsIndex(constants,const)
                 cLine = [1,cInd,cInd]
                 newStack,cArrInd = findCommandIndex(newStack,cLine)    
-                newStack.append([4,cArrInd, row])
-        
-            curInd = len(newStack)-1
+                newStack.append([4,cArrInd, rInd])
+                curInd = len(newStack)-1
             
         if lastInd != None:
             newStack.append([2,lastInd,curInd])

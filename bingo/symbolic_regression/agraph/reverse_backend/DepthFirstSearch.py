@@ -37,12 +37,12 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                 ANS[1].sort()
                 
                 const,indexes = ANS
-                SUM[tuple(indexes)] += const
-                
+                if const!=0:
+                    SUM[tuple(indexes)] += const
                     
         if node!=0 and node!=1:
             if children:
-                for c in children:
+                for cInd,c in enumerate(children):
                     newpath = path[:]
                     newpath += [c]
                     newops = operations[:]
@@ -50,7 +50,6 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                     newANS= [ANS[0],ANS[1][:]]
                     newMax = MAX
                     
-                    cInd = children.index(c)
                     # Multiplication 
                     if node == 4:
                         if cInd == 0:
@@ -73,10 +72,13 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                         
                     # Minus
                     elif node ==3 :
-                        if cInd == 0:
-                            newANS[0] *= 1
-                        else:
-                            newANS[0] *= -1
+                        if children[0] == children[1]:
+                            newANS[0] *= 0
+                        else:    
+                            if cInd == 0:
+                                newANS[0] *= 1
+                            else:
+                                newANS[0] *= -1
                     
                     stack.append((newpath,newANS,newops,newMax))
     
