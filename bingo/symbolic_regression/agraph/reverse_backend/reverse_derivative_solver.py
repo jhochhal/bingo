@@ -4,7 +4,7 @@ from .DepthFirstSearch import DepthFirstSearch
 from .DerivativeCommand import DerivativeCommand
 from .findIndex import*
 
-def _reverse_eval(deriv_wrt_node,x,stack,constants):
+def _reverse_eval(deriv_wrt_node,x,stack,constants,info):
     # 1. make zero array
     try:
         zInd = constants.index(0.0)
@@ -17,14 +17,14 @@ def _reverse_eval(deriv_wrt_node,x,stack,constants):
     con = np.all(ev == ev[0])
     zeros = np.zeros(len(x))
     if np.allclose(ev, zeros, atol=10e-5) or con == True:
-        return np.array([zero]), constants
+        return np.array([zero]), constants,info
     if con == True:
         try:
             nInd = constants.index(ev[0])
-            return np.array([[1,nInd,nInd]]),constants
+            return np.array([[1,nInd,nInd]]),constants,info
         except:
             constants.append(ev[0])
-            return np.array([[1,len(constants)-1,len(constants)-1]]),constants
+            return np.array([[1,len(constants)-1,len(constants)-1]]),constants,info
         
     # 3. Call paths
     row,col = stack.shape
@@ -36,11 +36,11 @@ def _reverse_eval(deriv_wrt_node,x,stack,constants):
     if maxInd == float('-inf'):
         try:
             nInd = constants.index(NUM)
-            return np.array([[1,nInd,nInd]]),constants
+            return np.array([[1,nInd,nInd]]),constants,info
         except:
             constants.append(NUM)
-            return np.array([[1,len(constants)-1,len(constants)-1]]),constants
+            return np.array([[1,len(constants)-1,len(constants)-1]]),constants,info
     # 5. Find derivative command array
-    newStack,constants = DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero)
+    newStack,constants,info = DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero,info)
     newStack = np.array(newStack)
-    return newStack,constants
+    return newStack,constants,info

@@ -224,14 +224,15 @@ class AGraph(Equation, continuous_local_opt.ChromosomeInterface):
     """
     ***New function for reverse derivative solver***
     """
-    def derivative_command(self,deriv_wrt_node, x , command_array, constants):
+    def derivative_command(self,deriv_wrt_node, x , command_array, constants,info):
             
-        der_command_array, der_constants =\
+        der_command_array, der_constants,info =\
                            reverse_derivative_solver._reverse_eval(deriv_wrt_node,
                                                                    x,
                                                                    command_array,
-                                                                   constants)
-        return der_command_array, der_constants
+                                                                   constants,
+                                                                   info)
+        return der_command_array, der_constants,info
     
     def evaluate_equation_at(self, x):
         """Evaluate the `AGraph` equation.

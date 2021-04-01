@@ -1,15 +1,18 @@
 import numpy as np
 from .findIndex import*
 
-def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
+def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero,info):
 
     # 0. Initialization           
     newStack = stack[:maxInd+1].tolist()
     lastInd = None
+    
+    info = dict((k, v) for k, v in info.items() if v <= maxInd)
+        
 
     # 1. Insert zero array to stack
     newStack,zArrInd = findCommandIndex(newStack,zero)
-    info = {}
+    #info = {}
     # 2. Main algorithm
     for path in paths:
         const = paths[path]
@@ -104,5 +107,5 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
         ind1,ind2 = len(newStack)-1,len(newStack)-2
         newStack.append([2,ind1,ind2])
     
-    return newStack,constants
+    return newStack,constants,info
 
