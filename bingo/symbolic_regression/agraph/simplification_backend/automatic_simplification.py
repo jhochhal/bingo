@@ -14,7 +14,7 @@ def automatic_simplify(expression):
     expr_w_simp_operands = expression.map(automatic_simplify)
 
     return SIMPLIFICATION_FUNCTIONS[expr_w_simp_operands.operator](
-            expr_w_simp_operands)
+        expr_w_simp_operands)
 
 
 def simplify_power(expression):
@@ -253,10 +253,12 @@ def simplify_cos(expression):
         return ONE.copy()
     return expression
 
+
 def simplify_cosh(expression):
     if expression.operands[0].is_zero():
         return ONE.copy()
     return expression
+
 
 def simplify_logarithm(expression):
     operand = expression.operands[0]
@@ -290,5 +292,5 @@ SIMPLIFICATION_FUNCTIONS = {
     EXPONENTIAL: simplify_exponential,
     ABS: no_simplification,
     SQRT: no_simplification,
-    #SAFE_POWER: simplify_power,
+    # SAFE_POWER: simplify_power,
 }
