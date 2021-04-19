@@ -1,27 +1,27 @@
 from collections import defaultdict
+from .sameLine import *
 
 def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
     #1. Change commands to list
     commands = commands.tolist()
     X = [0,deriv_wrt_node,deriv_wrt_node]
     
-    if X not in commands:
-        print("It is impossible to derivate the equation")
-        return False
-    
-    #2. Iniitialize 
-    stack = [([root],
-              [1,[]],
-               [],
-               float('-inf'))]
-             
     paths,NUM = [],0
     cnt = defaultdict(int)
     GMax = float('-inf')
     SUM = defaultdict(float)
+    
+    if X not in commands:
+        return SUM, NUM, GMax
+    
+    same = sameOrder(commands)
+    #2. Iniitialize 
+    stack = [([root],
+              [1,[]])]
+             
     while stack:
         
-        path, ANS, operations, MAX = stack.pop()
+        path, ANS = stack.pop()
         element = path[-1]
         
         array = commands[element]
@@ -33,7 +33,7 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
             if len(ANS[1])==0:
                 NUM += ANS[0]   
             else:
-                GMax = max(GMax,MAX)
+                GMax = max(GMax,max(ANS[1]))
                 ANS[1].sort()
                 
                 const,indexes = ANS
@@ -45,10 +45,7 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                 for cInd,c in enumerate(children):
                     newpath = path[:]
                     newpath += [c]
-                    newops = operations[:]
-                    newops += [node]
                     newANS= [ANS[0],ANS[1][:]]
-                    newMax = MAX
                     
                     # Multiplication 
                     if node == 4:
@@ -57,15 +54,21 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                             if tmp[0] == 1:
                                 newANS[0] *= constants[tmp[1]]
                             else:
-                                newANS[1] += [children[1]]
-                                newMax = max(children[1],newMax)
+                                if children[1] in same:
+                                    newANS[1] += [same[children[1]]]
+                                else:
+                                    newANS[1] += [children[1]]
+                                
                         else:
                             tmp = commands[children[0]]
                             if tmp[0] == 1:
                                 newANS[0] *= constants[tmp[1]]
                             else:
-                                newANS[1] += [children[0]]
-                                newMax = max(children[0],newMax)
+                                if children[0] in same:
+                                    newANS[1] += [same[children[0]]]
+                                else:
+                                    newANS[1] += [children[0]]
+                                
                     # Add    
                     elif node == 2:
                         newANS[0] *= 1
@@ -79,8 +82,8 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                                 newANS[0] *= 1
                             else:
                                 newANS[0] *= -1
+
                     
-                    stack.append((newpath,newANS,newops,newMax))
-    
+                    stack.append((newpath,newANS))
 
     return SUM, NUM, GMax

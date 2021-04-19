@@ -1,46 +1,36 @@
 import numpy as np
-from bingo.symbolic_regression.agraph.evaluation_backend import evaluation_backend
 from .DepthFirstSearch import DepthFirstSearch
 from .DerivativeCommand import DerivativeCommand
+from .OrganizeEquation import *
 from .findIndex import*
 
-def _reverse_eval(deriv_wrt_node,x,stack,constants,info):
-    # 1. make zero array
+def _reverse_eval(deriv_wrt_node,x,stack,constants,simplify):
+    #1. Simplify equation
+    if simplify:        
+        Equation = organizeCommand(stack,constants)
+        stack, constants = newCommand(Equation)
+    #2. Find paths
     try:
         zInd = constants.index(0.0)
         zero = [1,zInd,zInd]
     except:
         constants.append(0.0)
         zero = [1,len(constants)-1,len(constants)-1]
-    # 2. No variable Return 0
-    ev = evaluation_backend.evaluate(stack, x, constants).reshape(len(x))
-    con = np.all(ev == ev[0])
-    zeros = np.zeros(len(x))
-    if np.allclose(ev, zeros, atol=10e-5) or con == True:
-        return np.array([zero]), constants,info
-    if con == True:
-        try:
-            nInd = constants.index(ev[0])
-            return np.array([[1,nInd,nInd]]),constants,info
-        except:
-            constants.append(ev[0])
-            return np.array([[1,len(constants)-1,len(constants)-1]]),constants,info
-        
-    # 3. Call paths
     row,col = stack.shape
     root = row-1
     paths, NUM, maxInd = DepthFirstSearch(root, stack, constants, deriv_wrt_node)
-    
-
-    # 4. No equation, Return constant 
+   
+    #3. Return value
     if maxInd == float('-inf'):
         try:
             nInd = constants.index(NUM)
-            return np.array([[1,nInd,nInd]]),constants,info
+            return np.array([[1,nInd,nInd]]),constants
         except:
             constants.append(NUM)
-            return np.array([[1,len(constants)-1,len(constants)-1]]),constants,info
-    # 5. Find derivative command array
-    newStack,constants,info = DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero,info)
+            return np.array([[1,len(constants)-1,len(constants)-1]]),constants
+
+    #4. Main Derivative algorithm
+    newStack,constants = DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero)
     newStack = np.array(newStack)
-    return newStack,constants,info
+   
+    return newStack,constants

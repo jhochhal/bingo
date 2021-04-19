@@ -3,8 +3,15 @@ def findCommandIndex(stack,array):
     try:
         ind = stack.index(array)
     except:
-        stack.append(array)
-        ind = len(stack)-1
+        if array[0]==2 or array[0]==4:
+            try:
+                ind = stack.index([array[0],array[2],array[1]])
+            except:
+                stack.append(array)
+                ind = len(stack)-1
+        else:
+            stack.append(array)
+            ind = len(stack)-1
     return stack, ind
 
 def findConstantsIndex(constants,element):

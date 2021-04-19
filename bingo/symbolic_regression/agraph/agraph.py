@@ -62,9 +62,7 @@ except ImportError:
     from .evaluation_backend import evaluation_backend
     from .simplification_backend import simplification_backend
 
-"""
-New library for rev command
-"""
+
 from .reverse_backend import reverse_derivative_solver
 
 LOGGER = logging.getLogger(__name__)
@@ -221,19 +219,18 @@ class AGraph(Equation, continuous_local_opt.ChromosomeInterface):
         return simplification_backend.get_utilized_commands(
                 self._command_array)
 
-    """
-    ***New function for reverse derivative solver***
-    """
-    def derivative_command(self,deriv_wrt_node, x , command_array, constants,info):
+    
+    def derivative_command(self,deriv_wrt_node, x , command_array, constants,simplify):
             
-        der_command_array, der_constants,info =\
+        der_command_array, der_constants =\
                            reverse_derivative_solver._reverse_eval(deriv_wrt_node,
                                                                    x,
                                                                    command_array,
                                                                    constants,
-                                                                   info)
-        return der_command_array, der_constants,info
-    
+                                                                   simplify)
+        return der_command_array, der_constants
+
+        
     def evaluate_equation_at(self, x):
         """Evaluate the `AGraph` equation.
 
