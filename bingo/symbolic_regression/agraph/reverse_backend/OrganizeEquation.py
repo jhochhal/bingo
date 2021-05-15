@@ -31,6 +31,7 @@ def organizeCommand(stack,constants):
                     for key2 in rowEq[c2]:
                         curEq[key1+key2]+=rowEq[c1][key1]*rowEq[c2][key2]
                 rowEq[ind] = curEq
+                
             elif node == 13:
                 curEq = defaultdict(float)
                 cRow = stack[c2]

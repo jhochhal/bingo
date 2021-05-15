@@ -4,7 +4,7 @@ from .DerivativeCommand import DerivativeCommand
 from .OrganizeEquation import *
 from .findIndex import*
 
-def _reverse_eval(deriv_wrt_node,x,stack,constants,simplify):
+def _reverse_eval(deriv_wrt_node,stack,constants,simplify):
     #1. Simplify equation
     if simplify:        
         Equation = organizeCommand(stack,constants)
@@ -18,8 +18,9 @@ def _reverse_eval(deriv_wrt_node,x,stack,constants,simplify):
         zero = [1,len(constants)-1,len(constants)-1]
     row,col = stack.shape
     root = row-1
-    paths, NUM, maxInd = DepthFirstSearch(root, stack, constants, deriv_wrt_node)
-   
+    paths, NUM, maxInd,stack,constants = DepthFirstSearch(root, stack, constants, deriv_wrt_node)
+    stack = np.array(stack)
+
     #3. Return value
     if maxInd == float('-inf'):
         try:
