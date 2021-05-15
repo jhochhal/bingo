@@ -20,7 +20,7 @@ CPP_PARAM = pytest.param("Cpp",
 
 OPERATOR_LIST = [INTEGER, VARIABLE, CONSTANT, ADDITION, SUBTRACTION,
                  MULTIPLICATION, DIVISION, SIN, COS, EXPONENTIAL, LOGARITHM,
-                 POWER, ABS, SQRT, SAFE_POWER]
+                 POWER, ABS, SQRT, ]  # SAFE_POWER]
 
 
 @pytest.fixture(params=["Python", CPP_PARAM])
@@ -99,8 +99,8 @@ def _function_evaluations(function, a, b):
         return np.log(np.abs(a))
     if function == POWER:
         return np.power(a, b)
-    if function == SAFE_POWER:
-        return np.power(np.abs(a), b)
+    # if function == SAFE_POWER:
+    #     return np.power(np.abs(a), b)
     if function == ABS:
         return np.abs(a)
     if function == SQRT:
@@ -121,19 +121,19 @@ def _function_derivatives(function, a, b, da, db):
     if function == DIVISION:
         return da / b, -a * db / b**2
     if function == SIN:
-        return da*np.cos(a), zero
+        return da * np.cos(a), zero
     if function == COS:
-        return -da*np.sin(a), zero
+        return -da * np.sin(a), zero
     if function == EXPONENTIAL:
-        return da*np.exp(a), zero
+        return da * np.exp(a), zero
     if function == LOGARITHM:
         return da / a, zero
     if function == POWER:
         return np.power(a, b) * da * b / a, \
-               np.power(a, b) * db * np.log(a)
-    if function == SAFE_POWER:
-        return np.power(np.abs(a), b) * da * b / a, \
-               np.power(np.abs(a), b) * db * np.log(np.abs(a))
+            np.power(a, b) * db * np.log(a)
+    # if function == SAFE_POWER:
+    #     return np.power(np.abs(a), b) * da * b / a, \
+    #         np.power(np.abs(a), b) * db * np.log(np.abs(a))
     if function == ABS:
         return da * np.sign(a), zero
     if function == SQRT:

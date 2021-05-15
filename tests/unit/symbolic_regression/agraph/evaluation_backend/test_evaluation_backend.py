@@ -48,7 +48,7 @@ def all_funcs_command_array():
                      [COS, 7, 0],
                      [EXPONENTIAL, 8, 0],
                      [LOGARITHM, 9, 0],
-                     [SAFE_POWER, 10, 0],
+                     #[SAFE_POWER, 10, 0],
                      [ABS, 11, 0],
                      [SQRT, 12, 0]])
 
@@ -91,7 +91,7 @@ def test_all_funcs_eval(eval_backend, all_funcs_command_array):
 def test_higher_dim_func_eval(eval_backend, higher_dim_command_array):
     x = np.arange(8).reshape((-1, 2))
     constants = (10, 100)
-    expected_f_of_x = np.sum(x*constants, axis=1).reshape((-1, 1))
+    expected_f_of_x = np.sum(x * constants, axis=1).reshape((-1, 1))
     f_of_x = eval_backend.evaluate(higher_dim_command_array,
                                    x, constants)
     np.testing.assert_array_almost_equal(f_of_x, expected_f_of_x)
@@ -111,7 +111,7 @@ def test_all_funcs_deriv_x(eval_backend, all_funcs_command_array):
                                [0.54785643],
                                [0.0]])
     f_of_x, df_dx = eval_backend.evaluate_with_derivative(
-            all_funcs_command_array, x, constants, True)
+        all_funcs_command_array, x, constants, True)
     np.testing.assert_array_almost_equal(f_of_x, expected_f_of_x)
     np.testing.assert_array_almost_equal(df_dx, expected_df_dx)
 
@@ -130,7 +130,7 @@ def test_all_funcs_deriv_c(eval_backend, all_funcs_command_array):
                                [-0.54785643],
                                [0.]])
     f_of_x, df_dc = eval_backend.evaluate_with_derivative(
-            all_funcs_command_array, x, constants, False)
+        all_funcs_command_array, x, constants, False)
     np.testing.assert_array_almost_equal(f_of_x, expected_f_of_x)
     np.testing.assert_array_almost_equal(df_dc, expected_df_dc)
 
@@ -138,11 +138,11 @@ def test_all_funcs_deriv_c(eval_backend, all_funcs_command_array):
 def test_higher_dim_func_deriv_x(eval_backend, higher_dim_command_array):
     x = np.arange(8).reshape((4, 2))
     constants = (10, 100)
-    expected_f_of_x = np.sum(x*constants, axis=1).reshape((-1, 1))
-    expected_df_dx = np.array([constants]*4)
+    expected_f_of_x = np.sum(x * constants, axis=1).reshape((-1, 1))
+    expected_df_dx = np.array([constants] * 4)
 
     f_of_x, df_dx = eval_backend.evaluate_with_derivative(
-            higher_dim_command_array, x, constants, True)
+        higher_dim_command_array, x, constants, True)
     np.testing.assert_array_almost_equal(f_of_x, expected_f_of_x)
     np.testing.assert_array_almost_equal(df_dx, expected_df_dx)
 
@@ -150,11 +150,10 @@ def test_higher_dim_func_deriv_x(eval_backend, higher_dim_command_array):
 def test_higher_dim_func_deriv_c(eval_backend, higher_dim_command_array):
     x = np.arange(8).reshape((4, 2))
     constants = (10, 100)
-    expected_f_of_x = np.sum(x*constants, axis=1).reshape((-1, 1))
+    expected_f_of_x = np.sum(x * constants, axis=1).reshape((-1, 1))
     expected_df_dc = x
 
     f_of_x, df_dc = eval_backend.evaluate_with_derivative(
-            higher_dim_command_array, x, constants, False)
+        higher_dim_command_array, x, constants, False)
     np.testing.assert_array_almost_equal(f_of_x, expected_f_of_x)
     np.testing.assert_array_almost_equal(df_dc, expected_df_dc)
-
