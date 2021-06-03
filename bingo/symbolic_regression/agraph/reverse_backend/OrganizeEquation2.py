@@ -189,11 +189,11 @@ def command4eq(operator,node,POW,WEquation,newCommand,newConstants):
                             newCommand,lastInd = findCommandIndex(newCommand,[4,lastInd,xind])
                     # Eq(X)
                     else:
-                        if index != 0:
+                        if index == 0:
                             newCommand, newConstants, lastInd = command4eq(sub_operator,sub_node,sub_POW,WEquation,newCommand,newConstants)
                         else:
                             newCommand, newConstants, curInd = command4eq(sub_operator,sub_node,sub_POW,WEquation,newCommand,newConstants)
-                            newCommand,lastInd = findCommandIndex(newCommand,[4,curInd,lastInd])
+                            newCommand, curInd = findCommandIndex(newCommand,[4,curInd,lastInd])
                             lastInd = curInd
 
                 if const!=1:
