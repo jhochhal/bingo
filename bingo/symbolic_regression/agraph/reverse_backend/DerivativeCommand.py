@@ -1,17 +1,14 @@
 import numpy as np
 from .findIndex import*
 
-def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
+def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd):
 
     # 0. Initialization           
     newStack = stack[:maxInd+1].tolist()
     
     lastInd = None
-        
-    # 1. Insert zero array to stack
-    newStack,zArrInd = findCommandIndex(newStack,zero)
-    #info = {}
-    # 2. Main algorithm
+   
+    # 1. Main algorithm
     for path in paths:
         const = paths[path]
         indexes = list(path)
@@ -19,13 +16,8 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
         if n == 1:
             if const == 1:
                 curInd = indexes[0]
-            elif const == -1:
-                newStack.append([3,zArrInd, indexes[0]])
-                curInd = len(newStack)-1
             else:
-                
                 constants,cInd = findConstantsIndex(constants,const)
-                
                 cLine = [1,cInd,cInd]
                 newStack,cArrInd = findCommandIndex(newStack,cLine)    
                 newStack.append([4,cArrInd, indexes[0]])
@@ -46,12 +38,8 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd,zero):
                 
             if const==1:
                 curInd = rInd
-
-            elif const==-1:
-                newStack.append([3,zArrInd, rInd])
-                curInd = len(newStack)-1
                 
-            elif abs(const)!=1:
+            else:
                 constants,cInd = findConstantsIndex(constants,const)
                 cLine = [1,cInd,cInd]
                 newStack,cArrInd = findCommandIndex(newStack,cLine)    

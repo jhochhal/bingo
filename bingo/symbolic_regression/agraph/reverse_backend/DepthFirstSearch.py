@@ -31,23 +31,16 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
             if len(Answer[1])==0:
                 NUM += Answer[0]   
             else:
-                MAX = max(MAX,max(Answer[1]))
                 Answer[1].sort()
-                
                 const,indexes = Answer
                 if const!=0:
+                    MAX = max(MAX,max(Answer[1]))
                     SUM[tuple(indexes)] += const
                     
         # Find path if node is not leaf
-        
         if node!=0 and node!=1:
            
-            newpath1,newAnswer1,newpath2,newAnswer2 =\
-                                                    reverse_function(node,param1,param2,path,Answer,commands,constants,same)
+            reverse_function(node,param1,param2,path,Answer,commands,constants,same,stack)
            
-            stack.append((newpath1,newAnswer1))
-            if newpath2 != None:
-                stack.append((newpath2,newAnswer2))
-        
 
     return SUM, NUM, MAX, commands,constants
