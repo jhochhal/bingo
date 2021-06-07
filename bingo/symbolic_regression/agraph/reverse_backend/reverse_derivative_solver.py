@@ -8,10 +8,10 @@ from .findIndex import*
 def _reverse_eval(deriv_wrt_node,stack,constants,simplify):
     #1. Simplify equation
     if simplify:
-        Eq,wEq = organizeEquation(stack,constants)
-        stack, constants = organizeStack(Eq,wEq)
-        #Equation = organizeCommand(stack,constants)
-        #stack, constants = newCommand(Equation)
+        #Eq,wEq = organizeEquation(stack,constants)
+        #stack, constants = organizeStack(Eq,wEq)
+        Equation = organizeCommand(stack,constants)
+        stack, constants = newCommand(Equation)
 
         
     #2. Find paths
