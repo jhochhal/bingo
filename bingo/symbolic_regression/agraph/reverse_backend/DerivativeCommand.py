@@ -17,8 +17,10 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd):
             if const == 1:
                 curInd = indexes[0]
             else:
+                
                 constants,cInd = findConstantsIndex(constants,const)
                 cLine = [1,cInd,cInd]
+                    
                 newStack,cArrInd = findCommandIndex(newStack,cLine)    
                 newStack.append([4,cArrInd, indexes[0]])
                 curInd = len(newStack)-1
@@ -40,8 +42,10 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd):
                 curInd = rInd
                 
             else:
+                
                 constants,cInd = findConstantsIndex(constants,const)
                 cLine = [1,cInd,cInd]
+                    
                 newStack,cArrInd = findCommandIndex(newStack,cLine)    
                 newStack.append([4,cArrInd, rInd])
                 curInd = len(newStack)-1
@@ -56,6 +60,7 @@ def DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd):
     if NUM!=0:
         constants,nInd = findConstantsIndex(constants,NUM)
         newStack.append([1,nInd,nInd])
+        
         ind1,ind2 = len(newStack)-1,len(newStack)-2
         newStack.append([2,ind1,ind2])
     

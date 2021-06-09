@@ -85,7 +85,7 @@ class AGraph(Equation, continuous_local_opt.ChromosomeInterface):
         numeric constants that are used in the equation
 
     """
-    def __init__(self, use_simplification=False):
+    def __init__(self, use_simplification = True):
         super().__init__()
         self._command_array = np.empty([0, 3], dtype=int)
 
@@ -221,7 +221,7 @@ class AGraph(Equation, continuous_local_opt.ChromosomeInterface):
 
     
     def derivative_command(self,deriv_wrt_node, command_array, constants,simplify):
-            
+        
         der_command_array, der_constants =\
                            reverse_derivative_solver._reverse_eval(deriv_wrt_node,
                                                                    command_array,

@@ -11,9 +11,8 @@ def organizeEquation(stack,constants):
         organize_function(node,param1,param2,index,stack,constants,Equations)
     keys = list(Equations)
     return Equations[keys[-1]], Equations
-                    
+
 def organizeStack(Equation,WEquation):
-    print(Equation)
     #1. orders of equation
     pows = pow_oder(Equation)
     #2. constant answer
@@ -34,44 +33,22 @@ def organizeStack(Equation,WEquation):
     for chain in Equation:
         # constant
         if (isinstance(chain,int)):
-            NUM += Equation[chain]
-            
+            NUM += Equation[chain]   
         else:
             const = Equation[chain]
             if const!=1:
                 newConstants,const_ind = findConstantsIndex(newConstants,const)
                 newCommand,const_line_ind = findCommandIndex(newCommand,[1,const_ind,const_ind])
+                
             chain = list(chain)
             for index,ele in enumerate(chain):
                 operator,node,POW = ele
-                # load X
-                if operator == 0:
-                    xind = powPos[node][POW]
-                    if index == 0:
-                        lastInd = xind
-                    else:
-                        newCommand,lastInd = findCommandIndex(newCommand,[4,lastInd,xind])
-                # Eq(X)
+                xind = powPos[node][POW]
+                if index == 0:
+                    lastInd = xind
                 else:
-                    if index == 0:
-                        newCommand,newConstants, lastInd = command4eq(operator,node,POW,WEquation,newCommand,newConstants)
-                        if POW>1:
-                            sine_0 = lastInd
-                            cnt = 1
-                            while cnt<POW:
-                                newCommand,lastInd = findCommandIndex(newCommand,[4,sine_0,lastInd])
-                                cnt += 1
-                    else:
-                        newCommand,newConstants, curInd = command4eq(operator,node,POW,WEquation,newCommand,newConstants)
-                        if POW>1:
-                            sine_0 = curInd
-                            cnt = 1
-                            while cnt<POW:
-                                newCommand,curInd = findCommandIndex(newCommand,[4,sine_0,curInd])
-                                cnt += 1
+                    newCommand,lastInd = findCommandIndex(newCommand,[4,lastInd,xind])
                         
-                        newCommand,lastInd = findCommandIndex(newCommand,[4,lastInd,curInd])
-                        lastInd = len(newCommand)-1
             if const!=1:    
                 newCommand,_ = findCommandIndex(newCommand,[4,const_line_ind,lastInd])
             if lastRow!=None:
@@ -84,8 +61,7 @@ def organizeStack(Equation,WEquation):
         if lastRow!=None:
             newCommand.append([2,lastRow,len(newCommand)-1])
         lastRow = line_ind
-    print(np.array(newCommand))
-    print(newConstants)
+    
     return np.array(newCommand), newConstants
 
 def pow_oder(Equation):
@@ -137,99 +113,3 @@ def basicCommand(newCommand,newConstants,pows):
             pw+=1
             powPos[node][pw] = len(newCommand)-1
     return newCommand,newConstants,xPos,powPos
-
-def designCommand(xind, index, lastRow, newCommand):        
-    if index == 0:
-        lastInd = xind
-    else:
-        newCommand,lastInd = findCommandIndex(newCommand,[4,lastInd,xind])
-        
-    lastRow = len(newCommand)-1
-    return newCommand, lastRow
-                    
-def command4eq(operator,node,POW,WEquation,newCommand,newConstants):
-    Equation = WEquation[node]
-    pows = pow_oder(Equation)
-    newCommand,newConstants,xPos,powPos = basicCommand(newCommand,newConstants,pows)
-    
-    lastRow = None
-    NUM = 0
-    #4. Design command
-    for chain in Equation:
-        # constant
-        if (isinstance(chain,int)):
-            if len(Equation) == 1:
-                val = eval_function(operator,Equation[chain])
-                newConstants,const_ind = findConstantsIndex(newConstants,val)
-                newCommand,lastRow = findCommandIndex(newCommand,[1,const_ind,const_ind])
-                return newCommand, newConstants, lastRow
-            else:
-                NUM += Equation[chain]
-        else:
-            const = Equation[chain]
-            if const!=1:
-                newConstants,const_ind = findConstantsIndex(newConstants,const)
-                newCommand,const_line_ind = findCommandIndex(newCommand,[1,const_ind,const_ind])
-                
-            chain = list(chain)
-            
-            if len(chain) == 1:
-                sub_operator,sub_node,sub_POW = chain[0]
-                if sub_operator == 0:
-                    xind = powPos[sub_node][sub_POW]
-                    lastInd = xind
-                    if const!=1:
-                        newCommand, lastInd = findCommandIndex(newCommand,[4,const_line_ind,xind])
-                        
-                    if lastRow!=None:
-                        newCommand, lastInd = findCommandIndex(newCommand,[2,lastRow,lastInd])
-                        
-                    lastRow = lastInd
-                else:
-                    newCommand, newConstants, lastInd = command4eq(sub_operator,sub_node,sub_POW,WEquation,newCommand,newConstants)
-                    
-                    if const!=1:
-                        newCommand, lastInd = findCommandIndex(newCommand,[4,const_line_ind,lastInd])
-                        
-                    if lastRow!=None:
-                        newCommand, lastInd = findCommandIndex(newCommand,[2,lastRow,lastInd])
-                        
-                    lastRow = lastInd
-                
-            else:
-                for index,ele in enumerate(chain):
-                    sub_operator,sub_node,sub_POW = ele
-                    # load X
-                    if sub_operator == 0:
-                        xind = powPos[sub_node][sub_POW]
-                        if index == 0:
-                            lastInd = xind
-                        else:
-                            newCommand,lastInd = findCommandIndex(newCommand,[4,lastInd,xind])
-                    # Eq(X)
-                    else:
-                        if index == 0:
-                            newCommand, newConstants, lastInd = command4eq(sub_operator,sub_node,sub_POW,WEquation,newCommand,newConstants)
-                        else:
-                            newCommand, newConstants, curInd = command4eq(sub_operator,sub_node,sub_POW,WEquation,newCommand,newConstants)
-                            newCommand, curInd = findCommandIndex(newCommand,[4,curInd,lastInd])
-                            lastInd = curInd
-
-                if const!=1:
-                    newCommand, lastInd = findCommandIndex(newCommand,[4,const_line_ind,lastInd])
-                    
-                if lastRow!=None:
-                    newCommand, lastInd = findCommandIndex(newCommand,[2,lastRow,lastInd])
-                lastRow = lastInd
-                
-    if NUM!=0:
-        newConstants,cind = findConstantsIndex(newConstants,NUM)
-        newCommand,line_ind = findCommandIndex(newCommand,[1,cind,cind])
-        if lastRow!=None:
-            newCommand.append([2,lastRow,len(newCommand)-1])
-        lastRow = len(newCommand)-1
-        
-    newCommand,lastRow = findCommandIndex(newCommand,[operator,lastRow,lastRow])
-                
-    return newCommand, newConstants, lastRow
-                                    

@@ -4,14 +4,15 @@ from .DerivativeCommand import DerivativeCommand
 from .OrganizeEquation import *
 from .OrganizeEquation2 import *
 from .findIndex import*
+from bingo.symbolic_regression.agraph.simplification_backend import simplification_backend
 
 def _reverse_eval(deriv_wrt_node,stack,constants,simplify):
     #1. Simplify equation
     if simplify:
-        #Eq,wEq = organizeEquation(stack,constants)
-        #stack, constants = organizeStack(Eq,wEq)
-        Equation = organizeCommand(stack,constants)
-        stack, constants = newCommand(Equation)
+        Equation,wEq = organizeEquation(stack,constants)
+        stack, constants = organizeStack(Equation,wEq)
+        #Equation = organizeCommand(stack,constants)
+        #stack, constants = newCommand(Equation)
 
         
     #2. Find paths
@@ -32,5 +33,6 @@ def _reverse_eval(deriv_wrt_node,stack,constants,simplify):
     #4. Main Derivative algorithm
     newStack,constants = DerivativeCommand(deriv_wrt_node, stack, constants,paths,NUM,maxInd)
     newStack = np.array(newStack)
-   
+    newStack = simplification_backend.reduce_stack(newStack)
+    
     return newStack,constants

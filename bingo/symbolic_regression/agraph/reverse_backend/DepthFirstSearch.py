@@ -38,7 +38,7 @@ def DepthFirstSearch(root, commands, constants, deriv_wrt_node):
                     SUM[tuple(indexes)] += const
                     
         # Find path if node is not leaf
-        if node!=0 and node!=1:
+        if node!=0 and node!=1 and node!=-1:
            
             reverse_function(node,param1,param2,path,Answer,commands,constants,same,stack)
            

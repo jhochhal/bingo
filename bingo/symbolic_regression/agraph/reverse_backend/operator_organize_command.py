@@ -3,6 +3,9 @@ from .findIndex import *
 from collections import defaultdict
 from bingo.symbolic_regression.agraph.operator_definitions import *
 
+def _integer(param1,param2,index,stack,constants,Equations):
+    Equations[index] = {1:param1}
+
 # Load x column (0)
 def _loadx(param1,param2,index,stack,constants,Equations):
     # (X, param1, power): coefficient
@@ -141,7 +144,8 @@ def organize_function(node,param1,param2,index,stack,constants,Equations):
 def eval_function(node,num):
     return MAP_eval[node](num)
 
-MAP = {VARIABLE: _loadx,
+MAP = {INTEGER: _integer,
+       VARIABLE: _loadx,
        CONSTANT: _loadc,
        ADDITION: _add,
        SUBTRACTION: _subtract,
